@@ -1,3 +1,8 @@
 .pioenvs
 .piolibdeps
 .clang_complete
+.projectile
+.travis.yml
+
+# Emacs autosave
+*~
