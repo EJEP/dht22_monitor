@@ -1,5 +1,5 @@
 /*
-  dht_lcd.ino
+  ht_monitor.ino
 
   Reads the temperature and humidity from a DHT22 sensor then displays them on
   an HD44780 LCD display. Also sends the data by serial to something listening
@@ -23,19 +23,23 @@
  * DHT pin 1 to +5V
  * DHT pin 4 to GROUND
 
- Uses the built in LCD library and the Adafruit DHT library.
+ Uses the built in LCD library and the Adafruit DHT library. Doesn't use the
+ unified sensor library at the moment because it seems a lot of effort.
 
  */
 
 // include the library code:
 #include <LiquidCrystal.h>
 #include "DHT.h"
+#include "monitor.h"
 
 // initialize the LCD library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 // initialize the DHT sensor
 DHT dht(7, DHT22);
+
+monitor mon(1000, 10000);
 
 void setup() {
   // set up the LCD's number of columns and rows:
@@ -54,25 +58,5 @@ void setup() {
 }
 
 void loop() {
-  // Wait a few seconds between measurements.
-  delay(2000);
-
-  // Reading temperature or humidity takes about 250 milliseconds!
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  float h = dht.readHumidity();
-  // Read temperature as Celsius (the default)
-  float t = dht.readTemperature();
-
-  // Check if any reads failed and exit early (to try again).
-  if (isnan(h) || isnan(t)) {
-    Serial.println("Failed to read from DHT sensor!");
-    return;
-  }
-
-  lcd.setCursor(10, 0);
-  lcd.print(t);
-
-  lcd.setCursor(10, 1);
-  lcd.print(h);
-
+    mon.update(lcd, dht);
 }
