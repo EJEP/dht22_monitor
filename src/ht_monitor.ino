@@ -55,6 +55,9 @@ void setup() {
 
   // Setup the dht
   dht.begin();
+
+  // Set up serial interface
+  Serial.begin(9600);
 }
 
 void loop() {

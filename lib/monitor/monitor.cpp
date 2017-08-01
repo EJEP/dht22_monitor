@@ -22,6 +22,7 @@ void monitor::update(LiquidCrystal& lcd, DHT& dht) {
         // Need to get new data
         temperature = dht.readTemperature();
         humidity = dht.readHumidity();
+        // Try and do some error handling. There may be a better way.
         if (isnan(temperature) || isnan(humidity)) {
             //     return;
             lcd.clear();
@@ -29,16 +30,14 @@ void monitor::update(LiquidCrystal& lcd, DHT& dht) {
             error = true;
         }
         else {
-            if (error = true) {
+            if (error == true) {
                 lcd.begin(16, 2);
                 lcd.print("Temp:          C");
                 lcd.setCursor(0, 1);
                 lcd.print("Humidity:      %");
             }
-            lcd.setCursor(10, 0);
-            lcd.print(temperature);
-            lcd.setCursor(10, 1);
-            lcd.print(humidity);
+            // Actually update the LCD
+            show_on_screen(lcd);
             error = false;
         }
 
@@ -46,6 +45,10 @@ void monitor::update(LiquidCrystal& lcd, DHT& dht) {
     }
 }
 
-void monitor::show_on_screen(LiquidCrystal& lcd) const{
-    
+void monitor::show_on_screen(LiquidCrystal& lcd) const {
+    // Position the cursor in the spaces and print the data
+    lcd.setCursor(10, 0);
+    lcd.print(temperature);
+    lcd.setCursor(10, 1);
+    lcd.print(humidity);
 }
