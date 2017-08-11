@@ -16,7 +16,7 @@ monitor::monitor(long screen_T, long serial_T) {
 }
 
 // Pass the objects as non-const as the member functions are not const.
-void monitor::update(LiquidCrystal& lcd, DHT& dht, HardwareSerial& serial) {
+void monitor::update_lcd(LiquidCrystal& lcd, DHT& dht) {
     unsigned long currentMillis = millis();
     if (currentMillis - previousMillis >= screen_period) {
         // Need to get new data
@@ -30,23 +30,24 @@ void monitor::update(LiquidCrystal& lcd, DHT& dht, HardwareSerial& serial) {
             error = true;
         }
         else {
-            if (error == true) {
-                lcd.begin(16, 2);
-                lcd.print("Temp:          C");
-                lcd.setCursor(0, 1);
-                lcd.print("Humidity:      %");
-            }
+            // if (error == true) {
+            //     lcd.begin(16, 2);
+            //     lcd.print("Temp:          C");
+            //     lcd.setCursor(0, 1);
+            //     lcd.print("Humidity:      %");
+            // }
             // Actually update the LCD
             show_on_screen(lcd);
 
-            // Test serial output
-            serial.print("Temp = ");
-            serial.println(temperature);
             error = false;
         }
 
         previousMillis += screen_period;
     }
+}
+
+void monitor::update_serial(HardwareSerial& serial, DHT& dht) {
+    unsigned long currentMillis = millis();
 }
 
 void monitor::show_on_screen(LiquidCrystal& lcd) const {

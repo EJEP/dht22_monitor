@@ -30,7 +30,11 @@ public:
     // + Print info to serial
 
     // Pass the objects as non-const as the member functions are not const.
-    void update(LiquidCrystal& lcd, DHT& dht, HardwareSerial& serial);
+    // Have separate functions for the lcd and serial as the times are different
+    // and the sensor needs different behaviour if it fails to read.
+    void update_lcd(LiquidCrystal& lcd, DHT& dht);
+
+    void update_serial(HardwareSerial& serial, DHT& dht);
 
     // Print the information on the screen
     void show_on_screen(LiquidCrystal& lcd) const;
