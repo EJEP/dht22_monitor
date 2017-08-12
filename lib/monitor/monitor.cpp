@@ -48,6 +48,10 @@ void monitor::update_lcd(LiquidCrystal& lcd, DHT& dht) {
 
 void monitor::update_serial(HardwareSerial& serial, DHT& dht) {
     unsigned long currentMillis = millis();
+    // If we are 'close enough' to the screen measurement, don't read from the
+    // sensor, otherwise get new data. Actually previous millis is shared, maybe
+    // write to serial would be a better function and that is called along with
+    // show_on_screen in update_lcd...
 }
 
 void monitor::show_on_screen(LiquidCrystal& lcd) const {
