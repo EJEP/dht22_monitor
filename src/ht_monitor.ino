@@ -39,7 +39,7 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 // initialize the DHT sensor
 DHT dht(7, DHT22);
 
-monitor mon(10000, 10000);
+monitor mon(3000, 10000);
 
 void setup() {
   // set up the LCD's number of columns and rows:
