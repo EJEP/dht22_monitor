@@ -14,7 +14,9 @@
 class monitor {
 
 private:
-    unsigned long previousMillis;
+    unsigned long previousSerial;
+    unsigned long previousScreen;
+    unsigned long lastDataMillis;
     float temperature;
     float humidity;
     unsigned long screen_period; // How often to update the screen, in ms
@@ -35,6 +37,11 @@ public:
     void update_lcd(LiquidCrystal& lcd, DHT& dht);
 
     void update_serial(HardwareSerial& serial, DHT& dht);
+
+    void update(LiquidCrystal& lcd, HardwareSerial& serial, DHT& dht);
+
+    // Write the information to the serial port
+    void serial_report(HardwareSerial& serial);
 
     // Print the information on the screen
     void show_on_screen(LiquidCrystal& lcd) const;

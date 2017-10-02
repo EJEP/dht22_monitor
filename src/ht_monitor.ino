@@ -61,5 +61,6 @@ void setup() {
 }
 
 void loop() {
-    mon.update_lcd(lcd, dht);
+    // mon.update_lcd(lcd, dht);
+    mon.update(lcd, Serial, dht);
 }
