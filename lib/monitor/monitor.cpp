@@ -1,7 +1,8 @@
 /*
   monitor.cpp
 
-  Class to get the temperature and humidity from a DHT22 at regular intervals and update a LCD display and send the data over the serial interface.
+  Class to get the temperature and humidity from a DHT22 at regular intervals
+  and update a LCD display and send the data over the serial interface.
 */
 #include <LiquidCrystal.h>
 #include "DHT.h"
