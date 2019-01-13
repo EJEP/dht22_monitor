@@ -1,4 +1,4 @@
-# DHt22 Monitor #
+# DHT22 Monitor #
 
 Arduino code to read the temperature and humidity from a DHT22 sensor. They are displayed on an LCD screen and sent over serial.
 
