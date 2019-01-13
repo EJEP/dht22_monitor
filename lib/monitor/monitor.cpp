@@ -9,10 +9,11 @@
 
 #include "monitor.h"
 
-monitor::monitor(long screen_T, long serial_T) {
+monitor::monitor(unsigned long screen_T, unsigned long serial_T) {
     screen_period = screen_T;
     serial_period = serial_T;
-    previousMillis = 0;
+    previousScreen = 0;
+    previousSerial = 0;
     lastDataMillis = 0;
     error = false;
 }
@@ -37,7 +38,7 @@ void monitor::update_lcd(LiquidCrystal& lcd, DHT& dht, unsigned long currentMill
         }
         else {
             if (error == true) {
-                lcd.clear;
+                lcd.clear();
                 lcd.setCursor(0, 0);
                 lcd.print("Temp:          C");
                 lcd.setCursor(0, 1);
@@ -105,7 +106,7 @@ void monitor::update(LiquidCrystal& lcd, HardwareSerial& serial, DHT& dht) {
         previousScreen += screen_period;
     }
 
-    if (currentMillis - previousSerial >= screen_period) {
+    if (currentMillis - previousSerial >= serial_period) {
         // Get new data if last data was more than 5 seconds ago
         if (currentMillis - lastDataMillis >= 5000) {
             // Need to get new data
@@ -128,7 +129,10 @@ void monitor::update(LiquidCrystal& lcd, HardwareSerial& serial, DHT& dht) {
 }
 
 void monitor::serial_report(HardwareSerial& serial) {
-    serial.println(temperature)
+    String report = String(temperature);
+    report += ":";
+    report += String(humidity);
+    serial.println(report);
 }
 
 void monitor::show_on_screen(LiquidCrystal& lcd) const {

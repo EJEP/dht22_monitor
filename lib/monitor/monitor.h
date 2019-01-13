@@ -24,7 +24,7 @@ private:
     bool error; // Record if there was an error last time we read the sensor.
 
 public:
-    monitor(long screen_T, long serial_T);
+    monitor(unsigned long screen_T, unsigned long serial_T);
 
     // Need functions to:
     // + Check time since last update
@@ -34,9 +34,9 @@ public:
     // Pass the objects as non-const as the member functions are not const.
     // Have separate functions for the lcd and serial as the times are different
     // and the sensor needs different behaviour if it fails to read.
-    void update_lcd(LiquidCrystal& lcd, DHT& dht);
+    void update_lcd(LiquidCrystal& lcd, DHT& dht, unsigned long currentMillis);
 
-    void update_serial(HardwareSerial& serial, DHT& dht);
+    void update_serial(HardwareSerial& serial, DHT& dht, unsigned long currentMillis);
 
     void update(LiquidCrystal& lcd, HardwareSerial& serial, DHT& dht);
 
