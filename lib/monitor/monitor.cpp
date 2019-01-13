@@ -9,20 +9,26 @@
 
 #include "monitor.h"
 
-monitor::monitor(long screen_T, long serial_T) {
+monitor::monitor(unsigned long screen_T, unsigned long serial_T) {
     screen_period = screen_T;
     serial_period = serial_T;
-    previousMillis = 0;
+    previousScreen = 0;
+    previousSerial = 0;
+    lastDataMillis = 0;
     error = false;
 }
 
 // Pass the objects as non-const as the member functions are not const.
-void monitor::update_lcd(LiquidCrystal& lcd, DHT& dht) {
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= screen_period) {
-        // Need to get new data
-        temperature = dht.readTemperature();
-        humidity = dht.readHumidity();
+void monitor::update_lcd(LiquidCrystal& lcd, DHT& dht, unsigned long currentMillis) {
+    if (currentMillis - previousScreen >= screen_period) {
+        // Get new data if last data was more than 5 seconds ago
+        if (currentMillis - lastDataMillis >= 5000) {
+            // Need to get new data
+            temperature = dht.readTemperature();
+            humidity = dht.readHumidity();
+            lastDataMillis += 5000;
+        }
+
         // Try and do some error handling. There may be a better way.
         if (isnan(temperature) || isnan(humidity)) {
             //     return;
@@ -31,28 +37,102 @@ void monitor::update_lcd(LiquidCrystal& lcd, DHT& dht) {
             error = true;
         }
         else {
-            // if (error == true) {
-            //     lcd.begin(16, 2);
-            //     lcd.print("Temp:          C");
-            //     lcd.setCursor(0, 1);
-            //     lcd.print("Humidity:      %");
-            // }
+            if (error == true) {
+                lcd.clear();
+                lcd.setCursor(0, 0);
+                lcd.print("Temp:          C");
+                lcd.setCursor(0, 1);
+                lcd.print("Humidity:      %");
+            }
             // Actually update the LCD
             show_on_screen(lcd);
 
             error = false;
         }
 
-        previousMillis += screen_period;
+        previousScreen += screen_period;
     }
 }
 
-void monitor::update_serial(HardwareSerial& serial, DHT& dht) {
+void monitor::update_serial(HardwareSerial& serial, DHT& dht, unsigned long currentMillis) {
+    if (currentMillis - previousSerial >= screen_period) {
+        // Get new data if last data was more than 5 seconds ago
+        if (currentMillis - lastDataMillis >= 5000) {
+            // Need to get new data
+            temperature = dht.readTemperature();
+            humidity = dht.readHumidity();
+            lastDataMillis += 5000;
+        }
+
+        if (isnan(temperature) || isnan(humidity)) {
+            error = true;
+        }
+
+        else {
+            serial_report(serial);
+            error = false;
+        }
+        previousSerial += serial_period;
+    }
+}
+
+void monitor::update(LiquidCrystal& lcd, HardwareSerial& serial, DHT& dht) {
+    // Get the time since the last update
     unsigned long currentMillis = millis();
-    // If we are 'close enough' to the screen measurement, don't read from the
-    // sensor, otherwise get new data. Actually previous millis is shared, maybe
-    // write to serial would be a better function and that is called along with
-    // show_on_screen in update_lcd...
+
+    // Update the LCD if more time than the screen period has passed
+    if (currentMillis - previousScreen >= screen_period) {
+        // Get new data if last data was more than 5 seconds ago
+        if (currentMillis - lastDataMillis >= 5000) {
+            // Need to get new data
+            temperature = dht.readTemperature();
+            humidity = dht.readHumidity();
+            lastDataMillis += 5000;
+        }
+
+        // Try and do some error handling. There may be a better way.
+        if (isnan(temperature) || isnan(humidity)) {
+            //     return;
+            lcd.clear();
+            lcd.print("E R R O R");
+            error = true;
+        }
+        else {
+            // Actually update the LCD
+            show_on_screen(lcd);
+
+            error = false;
+        }
+        previousScreen += screen_period;
+    }
+
+    if (currentMillis - previousSerial >= serial_period) {
+        // Get new data if last data was more than 5 seconds ago
+        if (currentMillis - lastDataMillis >= 5000) {
+            // Need to get new data
+            temperature = dht.readTemperature();
+            humidity = dht.readHumidity();
+            lastDataMillis += 5000;
+        }
+
+        if (isnan(temperature) || isnan(humidity)) {
+            error = true;
+        }
+
+        else {
+            serial_report(serial);
+            error = false;
+        }
+        previousSerial += serial_period;
+    }
+
+}
+
+void monitor::serial_report(HardwareSerial& serial) {
+    String report = String(temperature);
+    report += ":";
+    report += String(humidity);
+    serial.println(report);
 }
 
 void monitor::show_on_screen(LiquidCrystal& lcd) const {
